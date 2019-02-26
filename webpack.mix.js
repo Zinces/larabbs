@@ -15,3 +15,4 @@ mix.js('resources/assets/js/app.js', 'public/js')
    .sass('resources/assets/sass/app.scss', 'public/css')
     .copyDirectory('resources/assets/editor/js', 'public/js')
     .copyDirectory('resources/assets/editor/css', 'public/css');
+mix.scripts(['resources/assets/js/tips.js'], 'public/js/all.js');
