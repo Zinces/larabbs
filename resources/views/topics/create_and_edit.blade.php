@@ -1,5 +1,7 @@
 @extends('layouts.app')
-
+@section('styles')
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/simditor.css') }}">
+@stop
 @section('content')
 
 <div class="container">
@@ -8,11 +10,11 @@
             
             <div class="panel-heading">
                 <h1>
-                    <i class="glyphicon glyphicon-edit"></i> Topic /
+                    <i class="glyphicon glyphicon-edit"></i>
                     @if($topic->id)
-                        Edit #{{$topic->id}}
+                        编辑话题
                     @else
-                        Create
+                        创建话题
                     @endif
                 </h1>
             </div>
@@ -29,52 +31,31 @@
 
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
-                    
+
                 <div class="form-group">
-                	<label for="title-field">Title</label>
-                	<input class="form-control" type="text" name="title" id="title-field" value="{{ old('title', $topic->title ) }}" />
-                </div> 
-                <div class="form-group">
-                	<label for="body-field">Body</label>
-                	<textarea name="body" id="body-field" class="form-control" rows="3">{{ old('body', $topic->body ) }}</textarea>
-                </div> 
-                <div class="form-group">
-                    <label for="user_id-field">User_id</label>
-                    <input class="form-control" type="text" name="user_id" id="user_id-field" value="{{ old('user_id', $topic->user_id ) }}" />
-                </div> 
-                <div class="form-group">
-                    <label for="category_id-field">Category_id</label>
-                    <input class="form-control" type="text" name="category_id" id="category_id-field" value="{{ old('category_id', $topic->category_id ) }}" />
-                </div> 
-                <div class="form-group">
-                    <label for="reply_count-field">Reply_count</label>
-                    <input class="form-control" type="text" name="reply_count" id="reply_count-field" value="{{ old('reply_count', $topic->reply_count ) }}" />
-                </div> 
-                <div class="form-group">
-                    <label for="view_count-field">View_count</label>
-                    <input class="form-control" type="text" name="view_count" id="view_count-field" value="{{ old('view_count', $topic->view_count ) }}" />
-                </div> 
-                <div class="form-group">
-                    <label for="last_reply_user_id-field">Last_reply_user_id</label>
-                    <input class="form-control" type="text" name="last_reply_user_id" id="last_reply_user_id-field" value="{{ old('last_reply_user_id', $topic->last_reply_user_id ) }}" />
-                </div> 
-                <div class="form-group">
-                    <label for="order-field">Order</label>
-                    <input class="form-control" type="text" name="order" id="order-field" value="{{ old('order', $topic->order ) }}" />
-                </div> 
-                <div class="form-group">
-                	<label for="excerpt-field">Excerpt</label>
-                	<textarea name="excerpt" id="excerpt-field" class="form-control" rows="3">{{ old('excerpt', $topic->excerpt ) }}</textarea>
-                </div> 
-                <div class="form-group">
-                	<label for="slug-field">Slug</label>
-                	<input class="form-control" type="text" name="slug" id="slug-field" value="{{ old('slug', $topic->slug ) }}" />
+                	<label for="title-field">标题:</label>
+                	<input class="form-control" type="text" name="title" value="{{ old('title', $topic->title ) }}" placeholder="请输入话题标题" required/>
                 </div>
 
-                    <div class="well well-sm">
-                        <button type="submit" class="btn btn-primary">Save</button>
-                        <a class="btn btn-link pull-right" href="{{ route('topics.index') }}"><i class="glyphicon glyphicon-backward"></i>  Back</a>
-                    </div>
+                <div class="form-group">
+                    <select class="form-control" name="category_id" required>
+                        <option value="" hidden disabled selected>请选择分类</option>
+                        @foreach ($categories as $value)
+                            <option value="{{ $value->id }}">{{ $value->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                	<label for="body-field">内容:</label>
+                	<textarea name="body" id="editor" class="form-control" rows="10" placeholder="请输入话题内容" required>{{ old('body', $topic->body ) }}</textarea>
+                </div> 
+
+                <div class="well well-sm">
+                    <button type="submit" class="btn btn-primary">提交</button>
+                    <a class="btn btn-link pull-right" href="{{ route('topics.index') }}"><i class="glyphicon glyphicon-backward"></i>  返回</a>
+                </div>
                 </form>
             </div>
         </div>
@@ -82,3 +63,26 @@
 </div>
 
 @endsection
+
+@section('scripts')
+    <script type="text/javascript"  src="{{ asset('js/module.js') }}"></script>
+    <script type="text/javascript"  src="{{ asset('js/hotkeys.js') }}"></script>
+    <script type="text/javascript"  src="{{ asset('js/uploader.js') }}"></script>
+    <script type="text/javascript"  src="{{ asset('js/simditor.js') }}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var editor = new Simditor({
+                textarea: $('#editor'),
+                upload: {
+                    url: '{{ route('topics.upload_image') }}',
+                    params: { _token: '{{ csrf_token() }}' },
+                    fileKey: 'upload_file',
+                    connectionCount: 3,
+                    leaveConfirm: '文件上传中，关闭此页面将取消上传。'
+                },
+                pasteImage: true,
+            });
+        });
+    </script>
+@stop
