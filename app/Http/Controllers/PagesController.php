@@ -2,15 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Link;
 use App\Models\Topic;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class PagesController extends Controller
 {
-    public function index(Request $request,Topic $topic)
+    public function index(Request $request,User $user, Link $link)
     {
         $topics = Topic::withOrder($request->order)->paginate(20);
-        return view('topics.index', compact('topics'));
+
+        $active_users = $user->getActiveUsers();
+
+        $links = $link->getAllCached();
+
+        return view('topics.index', compact('topics','active_users','links'));
     }
 
     public function permissionDenied()
